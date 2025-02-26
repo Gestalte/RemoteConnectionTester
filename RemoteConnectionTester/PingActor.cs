@@ -26,7 +26,7 @@ internal sealed class PingActor : ReceiveActor
 
         Receive<PingRequest>(_ =>
         {
-            logger.Info($"Received {nameof(PingRequest)}");
+            logger.Info($"Received {nameof(PingRequest)} from {Sender.Path.Address}");
 
             var remotePath = $"akka.tcp://server-actor-system@{this.hostname}:{this.port}/user/pong-actor";
             logger.Info($"Remote path: {remotePath}");

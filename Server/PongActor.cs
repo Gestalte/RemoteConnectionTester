@@ -12,8 +12,7 @@ public sealed class PongActor : ReceiveActor
     {
         Receive<Ping>(_ =>
         {
-            logger.Info($"Received {nameof(Ping)}");
-
+            logger.Info($"Received {nameof(Ping)} from {Sender.Path.Address}");
             Sender.Tell(new Pong());
         });
     }
