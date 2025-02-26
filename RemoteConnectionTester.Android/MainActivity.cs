@@ -1,6 +1,5 @@
 ﻿using Android.App;
 using Android.Content.PM;
-
 using Avalonia;
 using Avalonia.Android;
 using Avalonia.ReactiveUI;
@@ -8,7 +7,7 @@ using Avalonia.ReactiveUI;
 namespace RemoteConnectionTester.Android;
 
 [Activity(
-    Label = "RemoteConnectionTester.Android",
+    Label = "Remote Connection Tester",
     Theme = "@style/MyTheme.NoActionBar",
     Icon = "@drawable/icon",
     MainLauncher = true,
