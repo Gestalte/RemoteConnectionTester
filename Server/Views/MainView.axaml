@@ -59,6 +59,21 @@
 				</StackPanel>
 			</StackPanel>
 		</Border>
+
+		<Button
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch"
+			VerticalContentAlignment="Center"
+			HorizontalContentAlignment="Center"
+			Grid.Column="1"
+			Grid.Row="1"
+			Content="{Binding PortForwardText}"
+			BorderBrush="Black"
+			BorderThickness="1"
+			CornerRadius="0"
+			Margin="1"
+			Command="{Binding PortForward}"/>
+		
 		<Button
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"

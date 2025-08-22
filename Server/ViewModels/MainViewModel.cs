@@ -15,6 +15,8 @@ namespace Server.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
+    private NatTraversal.Utils traversal;
+
     public MainViewModel()
     {
         if (Design.IsDesignMode)
@@ -29,9 +31,12 @@ public class MainViewModel : ViewModelBase
             DeviceHostName = "localhost";
         }
 
+        this.traversal = new();
+        App.ShutDownAction = traversal.Dispose;
+
         LogWriter.WriteLogAction = (message) => Avalonia.Threading.Dispatcher.UIThread.Invoke(() => Logs.Add(message));
 
-        Logs.CollectionChanged += (s, e) => ListBox?.ScrollIntoView(ListBox.ItemCount);
+        Logs.CollectionChanged += (s, e) => Avalonia.Threading.Dispatcher.UIThread.Invoke(() => ListBox?.ScrollIntoView(ListBox.ItemCount));
 
         try
         {
@@ -72,7 +77,6 @@ public class MainViewModel : ViewModelBase
             var response = httpClient.GetAsync("https://myexternalip.com/raw").GetAwaiter().GetResult();
             response.EnsureSuccessStatusCode();
             var ip = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            DeviceExternalIP = ip;
             System.Diagnostics.Debug.WriteLine($"External IP: {ip}", "[INFO]");
             httpClient.Dispose();
         }
@@ -112,6 +116,13 @@ public class MainViewModel : ViewModelBase
     {
         get { return this.deviceExternalIP; }
         set { this.RaiseAndSetIfChanged(ref this.deviceExternalIP, value); }
+    }
+
+    private string? portForwardText = "Port Forward";
+    public string? PortForwardText
+    {
+        get { return this.portForwardText; }
+        set { this.RaiseAndSetIfChanged(ref this.portForwardText, value); }
     }
 
     public ObservableCollection<string> Logs { get; set; } = [];
@@ -178,5 +189,50 @@ public class MainViewModel : ViewModelBase
     public void CopyText(string text)
     {
         Clipboard?.SetTextAsync(text).GetAwaiter().GetResult();
+    }
+
+    private bool isPortForwarded;
+    private int forwaredPort;
+
+    public void PortForward()
+    {
+        if (!this.isPortForwarded)
+        {
+            if (int.TryParse(ServerPort, out int port))
+            {
+                NatTraversal.Utils.CreatePortMappingAwaitable natTraversalAwaitable = new(port);
+                var awaiter = natTraversalAwaitable.GetAwaiter();
+                awaiter.OnCompleted(() =>
+                {
+                    var result = awaiter.GetResult();
+                    if (!result)
+                    {
+                        this.traversal.Dispose();
+                        System.Console.WriteLine("NAT port mapping could not be created.");
+                        System.Diagnostics.Debug.WriteLine("NAT port mapping could not be created.", "[ERROR]");
+                        Logs.Add("NAT port mapping could not be created.");
+                        return;
+                    }
+
+                    this.forwaredPort = port;
+                    this.isPortForwarded = true;
+
+                    Logs.Add($"NAT port mapping created: {port}");
+
+                    PortForwardText = $"Remove port mapping: {port}";
+                });
+            }
+            else
+            {
+                Logs.Add($"Could not parse port: {this.forwaredPort}");
+            }
+        }
+        else
+        {
+            this.traversal.Dispose();
+            Logs.Add($"NAT port mapping removed: {this.forwaredPort}");
+            this.isPortForwarded = false;
+            PortForwardText = "Port Forward";
+        }
     }
 }

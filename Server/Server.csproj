@@ -23,5 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\NatTraversal\NatTraversal.csproj" />
   </ItemGroup>
 </Project>
