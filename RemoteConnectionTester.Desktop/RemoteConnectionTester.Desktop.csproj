@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Akka" Version="1.5.31" />
-    <PackageReference Include="Akka.Remote" Version="1.5.31" />
+    <PackageReference Include="Akka" Version="1.5.52" />
+    <PackageReference Include="Akka.Remote" Version="1.5.52" />
     <PackageReference Include="Avalonia.Desktop" Version="11.2.2" />
     <PackageReference Include="Avalonia.Diagnostics" Version="11.2.2" />
     <PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.10" />
